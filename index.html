@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3b2616">
+<title>Mi tablero para ti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{
+  --hand: "Patrick Hand", "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+  --marker: var(--hand);
+  --ink: #2b2a4c;
+  --wood-1: #5a3a22;
+  --wood-2: #3b2616;
+  --cork: #c99a62;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #6b4630 0%, transparent 60%),
+    linear-gradient(#3b2616, #2a190e);
+  font-family: var(--hand);
+  color: var(--ink);
+  padding: 16px;
+}
+
+/* ---------- marco de madera + corcho ---------- */
+.frame{
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 14px;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(92deg, rgba(0,0,0,.10) 0 2px, transparent 2px 7px),
+    linear-gradient(135deg, #7a5233, #4c2f1a 55%, #6a4529);
+  box-shadow: 0 24px 50px -12px rgba(0,0,0,.65), inset 0 2px 0 rgba(255,255,255,.18), inset 0 -2px 0 rgba(0,0,0,.35);
+}
+.board{
+  position: relative;
+  border-radius: 6px;
+  padding: 28px 18px 36px;
+  min-height: 80vh;
+  background-color: var(--cork);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360'><filter id='a' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .25  0 0 0 0 .13  0 0 0 0 .04  0 0 0 1.1 -.35'/></filter><rect width='100%' height='100%' filter='url(%23a)'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='b' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .30  0 0 0 0 .16  0 0 0 0 .05  0 0 0 1.6 -.55'/></filter><rect width='100%' height='100%' filter='url(%23b)'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='c' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='2' seed='21' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .95  0 0 0 0 .80  0 0 0 0 .55  0 0 0 1.4 -.62'/></filter><rect width='100%' height='100%' filter='url(%23c)'/></svg>");
+  box-shadow: inset 0 0 40px rgba(60,30,8,.55), inset 0 0 0 2px rgba(60,30,8,.35);
+  overflow: hidden;
+}
+
+/* ---------- encabezado ---------- */
+.head{ text-align:center; margin-bottom: 18px; }
+.kicker{
+  display:inline-block;
+  font-size: 1.25rem; font-weight:400;
+  background:#fffdf5; padding: 2px 14px 4px;
+  transform: rotate(-2deg);
+  box-shadow: 0 3px 6px rgba(0,0,0,.3);
+  position:relative;
+}
+.kicker::before,.kicker::after{
+  content:""; position:absolute; top:-7px; width:34px; height:14px;
+  background: rgba(255,236,160,.75); box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.kicker::before{ left:-14px; transform: rotate(-35deg); }
+.kicker::after{ right:-14px; transform: rotate(35deg); }
+h1{
+  font-family: var(--marker);
+  font-weight: 400;
+  margin: 14px 0 0;
+  font-size: clamp(2.2rem, 9.5vw, 3.9rem);
+  line-height: 1.05;
+  color: #fff8ea;
+  text-shadow: 0 2px 0 #7a2e2e, 0 4px 0 #5e2222, 0 8px 14px rgba(0,0,0,.45);
+  letter-spacing: .02em;
+}
+.sub{ margin: 10px 0 0; font-size: 1.35rem; font-weight:400; color:#3a2410; }
+
+/* ---------- chinches / filtros ---------- */
+.pins{
+  display:grid;
+  grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: 6px;
+  max-width: 560px;
+  margin: 22px auto 8px;
+  padding: 0;
+}
+.pin{
+  --c:#d94a4a;
+  appearance:none; border:0; background:none; padding:6px 0 0; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  font-family: var(--hand); color:#3a2410; -webkit-tap-highlight-color: transparent;
+}
+.pin .head-pin{
+  width: clamp(40px, 11vw, 56px); aspect-ratio:1; border-radius:50%;
+  display:grid; place-items:center;
+  font-family: var(--hand); font-size: clamp(1.6rem, 6vw, 2.1rem); line-height:1; color:#fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.55); -webkit-text-stroke: 1px rgba(0,0,0,.4); paint-order: stroke fill;
+  border: 3px solid color-mix(in srgb, var(--c) 62%, #000);
+  background: linear-gradient(165deg, color-mix(in srgb, var(--c) 86%, #fff) 0%, var(--c) 45%, color-mix(in srgb, var(--c) 82%, #000) 100%);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--c) 78%, #fff 22%), inset 0 -4px 6px rgba(0,0,0,.18), 0 7px 0 -2px color-mix(in srgb, var(--c) 45%, #000), 0 12px 10px -4px rgba(0,0,0,.55);
+  transition: transform .18s cubic-bezier(.3,1.6,.5,1), box-shadow .18s;
+}
+.pin:hover .head-pin{ transform: translateY(-3px) rotate(-4deg); }
+.pin:active .head-pin, .pin[aria-pressed="true"] .head-pin{
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 -1px color-mix(in srgb, var(--c) 45%, #000), 0 4px 5px -2px rgba(0,0,0,.6);
+}
+.pin[aria-pressed="true"] .head-pin{ outline: 3px solid #fff8; outline-offset: 3px; }
+.pin .lbl{ font-size: .98rem; font-weight:400; line-height:1; opacity:.85; text-align:center; }
+.pin:focus-visible{ outline: 3px dashed #fff; outline-offset: 4px; border-radius: 10px; }
+@media (max-width:560px){ .pin .lbl{ display:none; } }
+
+.viewall{
+  display:block; margin: 6px auto 0;
+  appearance:none; border:0; background:#fffdf5; cursor:pointer;
+  font-family: var(--hand); font-weight:400; font-size:1.15rem; color: var(--ink);
+  padding: 2px 14px 4px; transform: rotate(1.5deg);
+  box-shadow: 0 3px 6px rgba(0,0,0,.3);
+}
+.viewall[aria-pressed="true"]{ background:#ffe58a; }
+.viewall:focus-visible{ outline:3px dashed #fff; outline-offset:3px; }
+
+/* ---------- pregunta activa ---------- */
+.qtitle{
+  font-family: var(--hand); font-weight:400;
+  text-align:center; margin: 26px auto 14px;
+  max-width: 640px;
+  font-size: clamp(1.35rem, 4.8vw, 1.9rem); line-height:1.1;
+  background:#fffdf5; padding: 8px 18px 10px;
+  transform: rotate(-.8deg);
+  box-shadow: 0 6px 12px -3px rgba(0,0,0,.4);
+  position:relative;
+  background-image: repeating-linear-gradient(transparent 0 1.55em, rgba(90,120,200,.16) 1.55em calc(1.55em + 1px));
+}
+.qtitle .num{
+  font-family: var(--hand); color:#c0392b; font-size:1.3em; margin-right:.2em; -webkit-text-stroke:.5px #c0392b;
+}
+.qtitle::before{
+  content:""; position:absolute; top:-9px; left:50%; width:70px; height:18px; margin-left:-35px;
+  background: rgba(255,236,160,.8); transform: rotate(-2deg); box-shadow:0 1px 2px rgba(0,0,0,.2);
+}
+
+/* ---------- notas ---------- */
+.notes{
+  display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start;
+  gap: 26px 20px;
+  padding: 14px 4px 6px;
+}
+.group-title{
+  flex: 0 0 100%; text-align:center; margin: 18px 0 0;
+}
+.group-title span{
+  display:inline-block; font-weight:400; font-size:1.5rem;
+  background:#fffdf5; padding:2px 16px 5px; transform: rotate(-1deg);
+  box-shadow:0 4px 8px rgba(0,0,0,.3);
+}
+.group-title b{ font-family: var(--hand); color:#c0392b; font-weight:400; font-size:1.2em; margin-right:.2em; -webkit-text-stroke:.5px #c0392b; }
+
+.note{
+  --r: 0deg; --ty: 0px; --d: 0s;
+  position:relative;
+  width: clamp(148px, 42vw, 212px);
+  min-height: clamp(148px, 42vw, 212px);
+  padding: 30px 16px 22px;
+  display:grid; place-items:center; text-align:center;
+  font-size: clamp(1.15rem, 4.2vw, 1.4rem); line-height:1.12; font-weight:400;
+  color: var(--ink);
+  transform: translateY(var(--ty)) rotate(var(--r));
+  box-shadow: 0 1px 1px rgba(0,0,0,.25), 0 14px 14px -8px rgba(0,0,0,.45);
+  animation: stick .55s cubic-bezier(.2,.9,.3,1.15) both;
+  animation-delay: var(--d);
+  overflow-wrap: anywhere;
+}
+.note p{ margin:0; }
+.note .big{ font-size:1.3em; }
+.note .ctx{ display:block; margin-top:6px; font-size:.72em; opacity:.8; }
+.note.leaving{ animation: fall .26s ease-in both; animation-delay:0s; }
+
+.postit.yellow{ background: linear-gradient(170deg,#fff08a,#ffe45c); }
+.postit.pink  { background: linear-gradient(170deg,#ffc2d6,#ff9fbe); }
+.postit.mint  { background: linear-gradient(170deg,#c6f5d2,#9fe8b6); }
+.postit.blue  { background: linear-gradient(170deg,#bfe3ff,#93cdfb); }
+.postit.orange{ background: linear-gradient(170deg,#ffd2a1,#ffb76b); }
+.postit.lilac { background: linear-gradient(170deg,#e2cdff,#c9a8fb); }
+.postit::after{ /* esquina doblada */
+  content:""; position:absolute; right:0; bottom:0; width:26px; height:26px;
+  background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,.14) 50%, rgba(255,255,255,.35) 100%);
+  box-shadow: -2px -2px 4px rgba(0,0,0,.12);
+}
+
+.paper{
+  background:
+    repeating-linear-gradient(transparent 0 calc(1.45rem - 1px), rgba(90,120,200,.22) calc(1.45rem - 1px) 1.45rem),
+    #fffdf6;
+  border-left: 2px solid rgba(220,90,90,.45);
+  padding-left: 22px;
+  border-radius: 2px 2px 3px 14px;
+}
+
+/* adornos: chincheta o cinta */
+.deco{ position:absolute; top:-8px; left:50%; pointer-events:none; }
+.deco.pinned{
+  width:20px; height:20px; margin-left:-10px; top:6px; border-radius:50%;
+  border: 2px solid color-mix(in srgb, var(--pc,#d94a4a) 62%, #000);
+  background: linear-gradient(165deg, color-mix(in srgb, var(--pc,#d94a4a) 86%, #fff), var(--pc,#d94a4a) 50%, color-mix(in srgb, var(--pc,#d94a4a) 82%, #000));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--pc,#d94a4a) 78%, #fff 22%), 0 4px 3px -1px rgba(0,0,0,.5);
+}
+.deco.tape{
+  width:74px; height:22px; margin-left:-37px; top:-11px;
+  background: rgba(255,240,170,.72);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  transform: rotate(var(--tr,-3deg));
+  clip-path: polygon(0 8%,4% 0,8% 10%,12% 0,16% 10%,84% 10%,88% 0,92% 10%,96% 0,100% 8%,100% 92%,96% 100%,92% 90%,88% 100%,84% 90%,16% 90%,12% 100%,8% 90%,4% 100%,0 92%);
+}
+
+
+/* nota con forma de corazon */
+.note.heartnote{
+  --w: clamp(220px, 64vw, 300px);
+  width: var(--w);
+  min-height: 0; aspect-ratio: 100 / 90;
+  padding: calc(var(--w) * .10) calc(var(--w) * .20) calc(var(--w) * .24);
+  background: none; box-shadow: none;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)) drop-shadow(0 14px 12px rgba(0,0,0,.4));
+  font-size: clamp(1.25rem, 4.6vw, 1.55rem);
+  color: #4a1030;
+}
+.note.heartnote::before{
+  content:""; position:absolute; inset:0; z-index:-1;
+  background: linear-gradient(160deg, #ffc0d1 0%, #ff8aa8 55%, #f2648a 100%);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90' preserveAspectRatio='none'><path d='M50 88 C20 62 2 44 2 26 C2 12 13 2 27 2 C37 2 45 7 50 15 C55 7 63 2 73 2 C87 2 98 12 98 26 C98 44 80 62 50 88 Z'/></svg>") center / 100% 100% no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90' preserveAspectRatio='none'><path d='M50 88 C20 62 2 44 2 26 C2 12 13 2 27 2 C37 2 45 7 50 15 C55 7 63 2 73 2 C87 2 98 12 98 26 C98 44 80 62 50 88 Z'/></svg>") center / 100% 100% no-repeat;
+  animation: pulse 2s ease-in-out infinite;
+}
+.note.heartnote{ isolation:isolate; }
+@media (prefers-reduced-motion: reduce){ .note.heartnote::before{ animation:none; } }
+
+@keyframes stick{
+  0%  { opacity:0; transform: translateY(-46px) scale(1.35) rotate(calc(var(--r) + 10deg)); box-shadow: 0 30px 30px -10px rgba(0,0,0,.3); }
+  60% { opacity:1; transform: translateY(2px) scale(.97) rotate(var(--r)); }
+  100%{ opacity:1; transform: translateY(var(--ty)) rotate(var(--r)); }
+}
+@keyframes fall{
+  to{ opacity:0; transform: translateY(40px) rotate(calc(var(--r) + 14deg)) scale(.9); }
+}
+
+/* nota de bienvenida */
+.hello{
+  --r:-2deg; width: min(86%, 380px); min-height: 0; padding: 34px 22px 26px;
+  font-size: clamp(1.3rem, 4.6vw, 1.7rem);
+}
+.hello small{ display:block; margin-top:8px; font-size:.8em; opacity:.8; }
+
+/* ---------- firma ---------- */
+.signature{
+  position:relative;
+  max-width: 520px; margin: 54px auto 0; padding: 38px 26px 28px;
+  text-align:center;
+  background: #fffaf0;
+  transform: rotate(1.2deg);
+  box-shadow: 0 2px 2px rgba(0,0,0,.25), 0 22px 26px -12px rgba(0,0,0,.55);
+  background-image: repeating-linear-gradient(transparent 0 calc(1.7rem - 1px), rgba(200,90,90,.14) calc(1.7rem - 1px) 1.7rem);
+}
+.signature .deco.tape{ --tr:2deg; }
+.signature .msg{ margin:0; font-size: clamp(1.5rem, 5.6vw, 2.05rem); line-height:1.15; font-weight:400; color:#8a1f3d; }
+.signature .by{ margin:12px 0 0; font-size:1.5rem; font-weight:400; color:var(--ink); }
+.heart{ display:inline-block; color:#e0245e; animation: beat 1.6s ease-in-out infinite; transform-origin:center; }
+@keyframes pulse{ 0%,55%,100%{ transform:scale(1);} 15%{ transform:scale(1.045);} 30%{ transform:scale(1.015);} }
+@keyframes beat{ 0%,60%,100%{ transform:scale(1);} 20%{ transform:scale(1.25);} 40%{ transform:scale(1.08);} }
+
+@media (prefers-reduced-motion: reduce){
+  .note, .note.leaving{ animation: none; }
+  .heart{ animation: none; }
+  .pin .head-pin{ transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="frame">
+  <main class="board">
+    <header class="head">
+      <span class="kicker">Para Hellen</span>
+      <h1>Mi tablero para ti</h1>
+      <p class="sub">Cuenta regresiva: 6 &rarr; 1</p>
+    </header>
+
+    <nav class="pins" id="pins" aria-label="Elige una pregunta"></nav>
+    <button class="viewall" id="viewall" type="button" aria-pressed="false">ver todo el tablero</button>
+
+    <h2 class="qtitle" id="qtitle" hidden></h2>
+    <section class="notes" id="notes" aria-live="polite"></section>
+
+    <aside class="signature" aria-label="Mensaje final">
+      <span class="deco tape"></span>
+      <p class="msg">Me encantas mi He linda, te quiero mucho y para siempre <span class="heart" aria-hidden="true">&hearts;</span></p>
+      <p class="by">&mdash; German</p>
+    </aside>
+  </main>
+</div>
+
+<script>
+/* =====================================================================
+   AQUI VAN LAS RESPUESTAS. Edita solo este bloque.
+   Cada pregunta tiene tantas notas como su numero (6, 5, 4, 3, 2, 1).
+   ===================================================================== */
+const BOARD = [
+  { n: 6, label: "Dices mucho", color: "#d94a4a",
+    title: "Cosas que dices mucho",
+    notes: [
+      "Hey",
+      "¡Queeeee!\n(cuando te miro fijamente)",
+      "Shiiii",
+      "¡Qué violencia!",
+      "Ya no me quieres",
+      "Casémonos"
+    ] },
+  { n: 5, label: "De ti", color: "#e8892b",
+    title: "Cosas que me gustan de ti",
+    notes: [
+      "Tus ojos",
+      "Tu fe",
+      "Tu pega\n(versión premium)",
+      "Tus labios",
+      "Tus piernas"
+    ] },
+  { n: 4, label: "Te gustan", color: "#d4a60c",
+    title: "Cosas que te gustan",
+    notes: [
+      "El reggaetón movido y sucio",
+      "Los tenis",
+      "La joyería de oro",
+      "Las pijamas tiernas de short"
+    ] },
+  { n: 3, label: "Querido", color: "#2f9e6a",
+    title: "Cosas que haces que me hacen sentir querido y especial",
+    notes: [
+      "Que rezas por mí y los míos, y rezar juntos",
+      "Cuando me dices o me escribes lo que sientes, en un momento de la nada",
+      "Cuando me dices NO al dejar de abrazarnos, o me pides más besos de forma indirecta"
+    ] },
+  { n: 2, label: "Cambiaría", color: "#2f7fd0",
+    title: "Cosas que cambiaría de ti",
+    notes: [
+      "Soltar un poco lo negativo, o dedicarle menos tiempo a esos pensamientos",
+      "Separar la motivación de la disciplina"
+    ] },
+  { n: 1, label: "Única", color: "#8a4fd0", shape: "heart",
+    title: "Una cosa que te hace única",
+    notes: [
+      "Tu corazón\n(identidad afectiva)"
+    ] }
+];
+/* ===================================================================== */
+
+const COLORS = ["yellow","pink","mint","blue","orange","lilac"];
+const pinsEl = document.getElementById("pins");
+const notesEl = document.getElementById("notes");
+const titleEl = document.getElementById("qtitle");
+const allBtn  = document.getElementById("viewall");
+const reduce  = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let current = null, busy = false;
+
+function rand(seed){            // numeros "al azar" pero estables
+  let t = seed + 0x6D2B79F5;
+  t = Math.imul(t ^ t >>> 15, t | 1);
+  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+
+function makeNote(text, seed, order, pinColor, shape){
+  const el = document.createElement("article");
+  const paper = seed % 4 === 3;                       // cada 4ta es una hojita rayada
+  const heart = shape === "heart";
+  el.className = "note " + (heart ? "heartnote" : paper ? "paper" : "postit " + COLORS[Math.floor(rand(seed*7)*COLORS.length)]);
+  el.style.setProperty("--r",  (rand(seed)*10 - 5).toFixed(1) + "deg");
+  el.style.setProperty("--ty", (rand(seed+3)*16 - 8).toFixed(0) + "px");
+  el.style.setProperty("--d",  (order*0.09).toFixed(2) + "s");
+  const deco = document.createElement("span");
+  if (heart){ deco.hidden = true; }
+  else if (paper || seed % 2){ deco.className = "deco tape"; deco.style.setProperty("--tr", (rand(seed+5)*10-5).toFixed(0)+"deg"); }
+  else { deco.className = "deco pinned"; deco.style.setProperty("--pc", pinColor); }
+  const [main, ctx] = text.split("\n");
+  const p = document.createElement("p"); p.textContent = main;
+  if (main.length <= 16) p.className = "big";
+  if (ctx){ const c = document.createElement("small"); c.className = "ctx"; c.textContent = ctx; p.append(c); }
+  el.append(deco, p);
+  return el;
+}
+
+function paint(sel){
+  notesEl.replaceChildren();
+  titleEl.hidden = true;
+  if (sel === null){
+    const hi = document.createElement("article");
+    hi.className = "note postit yellow hello";
+    hi.innerHTML = '<span class="deco pinned" style="--pc:#d94a4a"></span><p>Tu nota tenía 6 preguntas.<br>Estas son mis respuestas.<small>Toca una chincheta ☝️</small></p>';
+    notesEl.append(hi);
+    return;
+  }
+  if (sel === "all"){
+    BOARD.forEach((q, qi) => {
+      const g = document.createElement("div");
+      g.className = "group-title";
+      g.innerHTML = '<span><b></b></span>';
+      g.firstChild.firstChild.textContent = q.n + ".";
+      g.firstChild.append(document.createTextNode(" " + q.title));
+      notesEl.append(g);
+      q.notes.forEach((t, i) => notesEl.append(makeNote(t, q.n*10 + i, i, q.color, q.shape)));
+    });
+    return;
+  }
+  const q = BOARD.find(b => b.n === sel);
+  titleEl.hidden = false;
+  titleEl.innerHTML = '<span class="num"></span><span class="t"></span>';
+  titleEl.querySelector(".num").textContent = q.n;
+  titleEl.querySelector(".t").textContent = q.title;
+  q.notes.forEach((t, i) => notesEl.append(makeNote(t, q.n*10 + i, i, q.color, q.shape)));
+}
+
+function select(sel){
+  if (busy || sel === current) return;
+  busy = true;
+  current = sel;
+  pinsEl.querySelectorAll(".pin").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.n === sel)));
+  allBtn.setAttribute("aria-pressed", String(sel === "all"));
+  const old = notesEl.querySelectorAll(".note");
+  const go = () => { paint(sel); busy = false; };
+  if (old.length && !reduce){
+    old.forEach(n => n.classList.add("leaving"));
+    setTimeout(go, 270);
+  } else go();
+}
+
+BOARD.forEach(q => {
+  const b = document.createElement("button");
+  b.className = "pin"; b.type = "button"; b.dataset.n = q.n;
+  b.setAttribute("aria-pressed", "false");
+  b.setAttribute("aria-label", q.n + ": " + q.title);
+  b.style.setProperty("--c", q.color);
+  b.innerHTML = '<span class="head-pin"></span><span class="lbl"></span>';
+  b.querySelector(".head-pin").textContent = q.n;
+  b.querySelector(".lbl").textContent = q.label;
+  b.addEventListener("click", () => select(q.n));
+  pinsEl.append(b);
+});
+allBtn.addEventListener("click", () => select("all"));
+
+paint(null);
+</script>
+</body>
+</html>
